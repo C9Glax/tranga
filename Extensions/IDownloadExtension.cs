@@ -28,6 +28,15 @@ public interface IDownloadExtension : IExtension
     public string? ParseIdentifierFromUrl(string url);
 
     /// <summary>
+    /// Downloads the cover of one series from the extension's site, for a link that was added by URL instead of
+    /// being found by a search (a search result already carries its cover).
+    /// </summary>
+    /// <param name="mangaInfo">The series, identified by <see cref="MangaInfo.Identifier"/>.</param>
+    /// <param name="ct">Cancellation-token for the operation.</param>
+    /// <returns>The cover, or <see langword="null"/> if the extension cannot provide one (or the request failed).</returns>
+    public Task<TrangaImage?> GetCover(MangaInfo mangaInfo, CancellationToken ct) => Task.FromResult<TrangaImage?>(null);
+
+    /// <summary>
     /// Returns the chapters of a Manga.
     /// </summary>
     /// <param name="mangaInfo"></param>

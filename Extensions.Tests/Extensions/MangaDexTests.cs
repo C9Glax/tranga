@@ -26,6 +26,32 @@ public sealed class MangaDexTests : DownloadExtensionTests<MangaDex>
     }
 
     [Fact]
+    public async Task CoverOfASeriesAddedByUrlIsDownloaded()
+    {
+        // https://mangadex.org/title/f9c33607-9180-4ba6-b85c-e4b5faee7192/official-test-manga
+        MangaInfo seriesInfo = new(
+            _extension.Identifier,
+            string.Empty,
+            "https://mangadex.org/title/f9c33607-9180-4ba6-b85c-e4b5faee7192",
+            "f9c33607-9180-4ba6-b85c-e4b5faee7192",
+            new TrangaImage()
+        );
+
+        TrangaImage? cover = await _extension.GetCover(seriesInfo, ct);
+
+        Assert.NotNull(cover);
+        Assert.True(cover.Length > 0);
+    }
+
+    [Fact]
+    public async Task CoverOfAnUnknownSeriesIsNull()
+    {
+        MangaInfo seriesInfo = new(_extension.Identifier, string.Empty, string.Empty, Guid.NewGuid().ToString(), new TrangaImage());
+
+        Assert.Null(await _extension.GetCover(seriesInfo, ct));
+    }
+
+    [Fact]
     public async Task ChapterRetrievalReturnsChapters()
     {
         // https://mangadex.org/title/f9c33607-9180-4ba6-b85c-e4b5faee7192/official-test-manga

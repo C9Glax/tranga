@@ -89,6 +89,16 @@ public sealed class MangaDex : IDownloadExtension, IMetadataExtension
         return Guid.TryParse(identifier, out _) ? identifier : null;
     }
 
+    /// <summary>The cover of the series with the id <see cref="MangaInfo.Identifier"/>, for a link added by its URL.</summary>
+    public async Task<TrangaImage?> GetCover(MangaInfo mangaInfo, CancellationToken ct)
+    {
+        if (!Guid.TryParse(mangaInfo.Identifier, out Guid seriesId) ||
+            await GetManga(new SearchQuery(MangaDexSeriesId: seriesId), ct) is not [{ } manga, ..])
+            return null;
+
+        return await GetCover(manga, ct);
+    }
+
     public SearchQuery? ParseSearchQueryFromUrl(string url) =>
         UriHelper.GetPathSegmentsOnHost(url, "mangadex.org") is ["title", { } id, ..] && Guid.TryParse(id, out Guid seriesId)
             ? new SearchQuery(MangaDexSeriesId: seriesId)

@@ -22,7 +22,7 @@ internal abstract class PostMangaDownloadLinkEndpoint
     /// <param name="mangaId">ID of Manga</param>
     /// <param name="req"></param>
     /// <param name="ct"></param>
-    /// <response code="200">The Download-Link was added, or already existed and the Manga was set to monitored</response>
+    /// <response code="200">The Download-Link was added (with the cover of the series on the extension's site, or the Manga's own cover if the extension has none), or already existed and the Manga was set to monitored</response>
     /// <response code="404">Manga with requested ID does not exist</response>
     /// <response code="400">The extension is unknown, the URL does not match the extension's expected shape, or the extension could not fetch chapters for the resolved series</response>
     public static async Task<Results<Ok<MangaDownloadLink>, NotFound, BadRequest<string>>> Handle(
@@ -41,6 +41,9 @@ internal abstract class PostMangaDownloadLinkEndpoint
                 m.MangaId == mangaId && m.DownloadLink.DownloadExtension == req.DownloadExtensionId && m.DownloadLink.Identifier == identifier, ct) is { } existingLink)
         {
             source.Manga.Monitored = true;
+            // A link that was added before covers were fetched has none: pasting its URL again repairs that.
+            if (existingLink.DownloadLink.CoverId is null)
+                await mangaContext.AddCover(existingLink.DownloadLink, extension, source.Metadata.CoverId, ct);
             await mangaContext.SaveChangesAsync(ct);
             return TypedResults.Ok(existingLink.ToDTO());
         }
@@ -65,6 +68,10 @@ internal abstract class PostMangaDownloadLinkEndpoint
 
         if (chapters is null)
             return TypedResults.BadRequest($"Could not fetch chapters from {extension.Name} for that URL - double-check the link is correct.");
+
+        // Unlike a search result, a pasted URL comes without a cover. The link is already known to be good, so a cover
+        // that cannot be fetched does not matter: the link falls back to the manga's own cover.
+        await mangaContext.AddCover(downloadLink, extension, source.Metadata.CoverId, ct);
 
         DbMangaDownloadLinks mangaDownloadLinks = new()
         {

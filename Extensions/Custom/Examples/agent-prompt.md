@@ -153,6 +153,10 @@ booleans are read as they are written. `null`, empty strings, objects and lists 
 - `title`, `url` and `cover` are all required and are looked up **inside** the item. `url` has to become the address
   of the series **page** (what a person would open), also for `json`: build it with `regex` and `replacement` when the
   API only has an id or slug.
+- When a user adds a series by pasting its URL there is no search result to take the cover from. For `html` sources
+  Tranga then uses the preview image of the series page (its `og:image`, else `twitter:image` meta tag); nothing has
+  to be configured, but check that the series page has one. `json` sources have no series page, such a series gets the
+  cover of the manga it was added to.
 
 ### Chapters
 

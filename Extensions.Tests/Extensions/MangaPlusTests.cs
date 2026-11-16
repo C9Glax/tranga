@@ -164,6 +164,24 @@ public sealed class MangaPlusTests : DownloadExtensionTests<MangaPlus>
     }
 
     [Fact]
+    public async Task CoverOfATitleAddedByUrlIsDownloaded()
+    {
+        MangaInfo manga = new(_extension.Identifier, string.Empty, OnePieceUrl, "100020", new Common.Helpers.TrangaImage());
+
+        Common.Helpers.TrangaImage? cover = await _extension.GetCover(manga, ct);
+
+        Assert.NotNull(cover);
+        Assert.True(cover.Length > 0);
+    }
+
+    [Fact]
+    public async Task CoverOfUnknownTitleIsNull()
+    {
+        MangaInfo manga = new(_extension.Identifier, "?", "https://mangaplus.shueisha.co.jp/titles/1", "1", new Common.Helpers.TrangaImage());
+        Assert.Null(await _extension.GetCover(manga, ct));
+    }
+
+    [Fact]
     public async Task ChaptersAreListedAndImagesDecryptToValidImages()
     {
         MangaInfo manga = new(_extension.Identifier, "ONE PIECE", OnePieceUrl, "100020", new Common.Helpers.TrangaImage());

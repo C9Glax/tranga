@@ -248,6 +248,34 @@ public sealed class SelectorDownloadExtension : IDownloadExtension, IDisposable
 
     #endregion
 
+    #region Cover
+
+    // The definition has no step for a series page, but nearly every site names its cover for link previews.
+    private static readonly SelectorField SeriesCoverField = new()
+    {
+        Selector = "meta[property='og:image'], meta[name='twitter:image']",
+        Attribute = "content"
+    };
+
+    /// <summary>
+    /// The cover of a series added by its URL: the preview image (<c>og:image</c>) of the series page. Only HTML sites
+    /// have such a page; the cover of the others can only come from a search.
+    /// </summary>
+    public async Task<TrangaImage?> GetCover(MangaInfo mangaInfo, CancellationToken ct)
+    {
+        // The series URL is the identifier of a custom source, a URL of another website is not fetched.
+        if (_definition.Format != SourceFormat.Html ||
+            ParseIdentifierFromUrl(mangaInfo.Identifier) is not { } seriesUrl ||
+            await TryFetchPage(new Uri(seriesUrl), ct) is not { Root: { } root } page ||
+            root.Url(SeriesCoverField, page.Url) is not { } coverUrl ||
+            !Uri.TryCreate(coverUrl, UriKind.Absolute, out Uri? cover))
+            return null;
+
+        return await DownloadImage(cover, _baseUri.ToString(), ct);
+    }
+
+    #endregion
+
     #region Chapters
 
     /// <inheritdoc />

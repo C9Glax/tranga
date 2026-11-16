@@ -140,6 +140,72 @@ public sealed class SelectorDownloadExtensionTests : Common.Tests.TrangaTest, ID
 
     #endregion
 
+    #region Cover
+
+    private string SeriesUrl => $"{_site.BaseUrl}/series/7/some-series";
+
+    [Fact]
+    public async Task CoverOfAPastedSeriesUrlIsTheOgImageOfThePage()
+    {
+        _site
+            .Html("/series/7/some-series", $"""<html><head><meta property="og:image" content="{_site.BaseUrl}/covers/1.jpg"></head></html>""")
+            .Map("/covers/1.jpg", new FixtureSite.Response("", "image/jpeg", Bytes: Jpeg()));
+
+        TrangaImage? cover = await Extension().GetCover(Manga(SeriesUrl), ct);
+
+        Assert.NotNull(cover);
+        Assert.Equal(Jpeg().Length, cover.Length);
+    }
+
+    [Fact]
+    public async Task RelativeOgImageIsResolvedAgainstThePage()
+    {
+        _site
+            .Html("/series/7/some-series", """<html><head><meta property="og:image" content="/covers/1.jpg"></head></html>""")
+            .Map("/covers/1.jpg", new FixtureSite.Response("", "image/jpeg", Bytes: Jpeg()));
+
+        Assert.NotNull(await Extension().GetCover(Manga(SeriesUrl), ct));
+    }
+
+    [Fact]
+    public async Task TwitterImageIsUsedWhenThePageHasNoOgImage()
+    {
+        _site
+            .Html("/series/7/some-series", """<html><head><meta name="twitter:image" content="/covers/2.jpg"></head></html>""")
+            .Map("/covers/2.jpg", new FixtureSite.Response("", "image/jpeg", Bytes: Jpeg()));
+
+        Assert.NotNull(await Extension().GetCover(Manga(SeriesUrl), ct));
+    }
+
+    [Fact]
+    public async Task PageWithoutPreviewImageHasNoCover()
+    {
+        _site.Html("/series/7/some-series", "<html><head><title>Some series</title></head><body><img src=\"/covers/1.jpg\"></body></html>");
+
+        Assert.Null(await Extension().GetCover(Manga(SeriesUrl), ct));
+    }
+
+    [Fact]
+    public async Task CoverIsMissingWhenThePageOrTheImageCannotBeFetched()
+    {
+        SelectorDownloadExtension extension = Extension();
+        // no page at all (404)
+        Assert.Null(await extension.GetCover(Manga(SeriesUrl), ct));
+
+        // a page, but the image it names is gone (404)
+        _site.Html("/series/7/some-series", """<html><head><meta property="og:image" content="/covers/gone.jpg"></head></html>""");
+        Assert.Null(await extension.GetCover(Manga(SeriesUrl), ct));
+    }
+
+    [Fact]
+    public async Task CoverIsNotFetchedForAUrlOfAnotherWebsite()
+    {
+        Assert.Null(await Extension().GetCover(Manga("https://other.test/series/7/some-series"), ct));
+        Assert.Empty(_site.Requests);
+    }
+
+    #endregion
+
     #region Chapters
 
     [Fact]

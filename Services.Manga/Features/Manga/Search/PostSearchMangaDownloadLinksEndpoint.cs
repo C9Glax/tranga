@@ -1,7 +1,4 @@
-using Common;
 using Common.Datatypes;
-using Common.Helpers;
-using Common.Settings;
 using Services.Manga.Helpers;
 using Extensions;
 using Extensions.Data;
@@ -69,11 +66,19 @@ internal abstract class PostSearchMangaDownloadLinksEndpoint
                 };
 
                 await mangaContext.AddAsync(mangaDownloadLinks, ct);
-                await SaveCover(mangaContext, mangaInfo, downloadLink, ct);
-                
-                result.Add(mangaDownloadLinks);
+                await mangaContext.SaveCover(downloadLink, mangaInfo.Cover, ct);
 
-            }else result.Add(existing);
+                result.Add(mangaDownloadLinks);
+            }
+            else
+            {
+                // A link that was added by its URL when no cover could be fetched has none: the search found the
+                // series, so it can have the cover of the source.
+                if (existing.DownloadLink.CoverId is null)
+                    await mangaContext.SaveCover(existing.DownloadLink, mangaInfo.Cover, ct);
+
+                result.Add(existing);
+            }
         }
 
         await mangaContext.SaveChangesAsync(ct);
@@ -86,31 +91,4 @@ internal abstract class PostSearchMangaDownloadLinksEndpoint
     /// </summary>
     /// <param name="SearchTerm">Optional free-text override for the search term. Falls back to the manga's stored title when null/empty.</param>
     public sealed record PostSearchMangaDownloadLinksRequest(string? SearchTerm);
-
-    private static async Task SaveCover(MangaContext mangaContext, MangaInfo mangaInfo, DbDownloadLink downloadLink, CancellationToken ct)
-    {
-        try
-        {
-            await mangaInfo.Cover.ToJpeg(ct);
-        }
-        catch
-        {
-            // Cover data isn't a valid/supported image - skip saving it rather than storing the raw,
-            // undecoded bytes under a made-up MIME type (consumers like Komga reject/fail to decode those).
-            return;
-        }
-
-        Guid coverId = Guid.CreateVersion7();
-        DbFile file = new ()
-        {
-            FileId = coverId,
-            Name = $"{coverId}.jpg",
-            Path = Constants.CoverDirectory,
-            MimeType = "image/jpeg"
-        };
-        await mangaContext.AddAsync(file, ct);
-        await file.SaveFile(mangaInfo.Cover, ct);
-        downloadLink.CoverId = file.FileId;
-        downloadLink.Cover = file;
-    }
 }

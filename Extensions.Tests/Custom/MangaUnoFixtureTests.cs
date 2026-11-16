@@ -53,6 +53,15 @@ public sealed class MangaUnoFixtureTests : Common.Tests.TrangaTest, IDisposable
         _site.Dispose();
     }
 
+    [Fact]
+    public async Task JsonSourcesHaveNoSeriesPageToTakeACoverFrom()
+    {
+        string seriesUrl = $"{_site.BaseUrl}/m/one-piece";
+
+        Assert.Null(await _extension.GetCover(new MangaInfo(_extension.Identifier, "", seriesUrl, seriesUrl, new TrangaImage()), ct));
+        Assert.Empty(_site.Requests);
+    }
+
     private string Fixture(string name) => File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "Custom", "Fixtures", name))
         .Replace("https://xz7.fstr-cdn.com", _site.BaseUrl);
 
