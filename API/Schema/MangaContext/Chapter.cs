@@ -267,6 +267,8 @@ public class Chapter : Identifiable, IComparable<Chapter>
             comicInfo.Add(new XElement("Volume", VolumeNumber));
         if(ParentManga.Authors.Count > 0)
             comicInfo.Add(new XElement("Writer", string.Join(',', ParentManga.Authors.Select(author => author.AuthorName))));
+        if(ParentManga.Year is not null)
+            comicInfo.Add(new XElement("Year", ParentManga.Year));
         if(ParentManga.OriginalLanguage is not null)
             comicInfo.Add(new XElement("LanguageISO", ParentManga.OriginalLanguage));
         if(ParentManga.Description != string.Empty)
