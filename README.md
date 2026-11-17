@@ -155,33 +155,30 @@ downloaded (where Komga/Kavita can access them for example).
 The file also includes [tranga-website](https://github.com/C9Glax/tranga-website) as frontend. For its configuration refer to the
 [Tranga-Website Repository](https://github.com/C9Glax/tranga-website) README.
 
-| Environment Variable              | default                       | Description                                                                                                      |
-|-----------------------------------|-------------------------------|------------------------------------------------------------------------------------------------------------------|
-| PORT                              | `6531`                        | Port for the API Endpoints (Don't change this unless you know what you are doing)                                |
-| POSTGRES_HOST                     | `tranga-pg:5432`              | host-address of postgres database (Don't change!)                                                                |
-| POSTGRES_DB                       | `postgres`                    | name of database                                                                                                 |
-| POSTGRES_USER                     | `postgres`                    | username used for database authentication                                                                        |
-| POSTGRES_PASSWORD                 | `postgres`                    | password used for database authentication                                                                        |
-| DOWNLOAD_LOCATION                 | `/Manga`                      | Target-Directory for Downloads (Path inside the container! Don't change!)                                        |
-| FLARESOLVERR_URL                  | _empty_                       | URL of Flaresolverr-Instance                                                                                     |
-| POSTGRES_COMMAND_TIMEOUT          | `60`                          | [Timeout of Postgres-commands](https://www.npgsql.org/doc/connection-string-parameters.html?q=Command%20Timeout) |
-| POSTGRES_CONNECTION_TIMEOUT       | `30`                          | Timeout for postgres-database connection                                                                         |
-| CHECK_CHAPTERS_BEFORE_START       | `true`                        | Whether to update database downloaded chapters column on startup (takes a while)                                 |
-| MATCH_EXACT_CHAPTER_NAME          | `true`                        | Match the stored filename exactly with the filename on disk when checking if a chapter is downloaded             |
-| CREATE_COMICINFO_XML              | `true`                        | Whether to include ComicInfo.xml in .cbz-Archives                                                                |
-| ALWAYS_INCLUDE_VOLUME_IN_FILENAME | `false`                       | Override to always include a volume in filenames (default as `Vol. 0`)                                           |
-| HTTP_REQUEST_TIMEOUT              | `60`                          | Request timeout for Mangaconnectors                                                                              |
-| REQUESTS_PER_MINUTE               | `90`                          | Maximum requests per minute for Mangaconnectors (Don't change)                                                   |
-| MINUTES_BETWEEN_NOTIFICATIONS     | `1`                           | Interval at which Tranga checks if notifications need to be sent.                                                |
-| HOURS_BETWEEN_NEW_CHAPTERS_CHECK  | `3`                           | Interval at which Tranga checks if there are new chapters for a manga                                            |
-| WORKER_TIMEOUT                    | `600`                         | Seconds a worker can take before being forcefully cancelled                                                      |
-| CHROMIUM_WAIT_TIME                | `15`                          | Seconds Chromium waits for a page to load (used for websites that require JavaScript)                            |
-| PUPPETEER_EXECUTABLE_PATH         | `/usr/bin/ungoogled-chromium` | Path to the Chromium executable. Preset in the Docker image (Don't change!). Falls back to `CHROME_BIN`          |
-| CHROME_BIN                        | `/usr/bin/ungoogled-chromium` | Alternative to `PUPPETEER_EXECUTABLE_PATH`. Preset in the Docker image (Don't change!)                           |
-| PUPPETEER_ARGS                    | _preset in image_             | Space-separated launch arguments for Chromium (see the `Dockerfile` for the preset) (Don't change!)              |
-| TRANGA_CORS__ALLOWED_ORIGIN       | _empty_                       | Restrict CORS to this single origin (e.g. `https://tranga.example.com`). If empty, all origins are allowed       |
-| TRANGA_SWAGGER__ENABLED           | `true`                        | Whether the Swagger UI (`/swagger`) is served                                                                    |
-| DEBUG                             | `false`                       | Development mode: stores configuration in `./debug` instead of `/usr/share` on Linux (Don't use in production)   |
+| Environment Variable              | default           | Description                                                                                                      |
+|-----------------------------------|-------------------|------------------------------------------------------------------------------------------------------------------|
+| PORT                              | `6531`            | Port for the API Endpoints (Don't change this unless you know what you are doing)                                |
+| POSTGRES_HOST                     | `tranga-pg:5432`  | host-address of postgres database (Don't change!)                                                                |
+| POSTGRES_DB                       | `postgres`        | name of database                                                                                                 |
+| POSTGRES_USER                     | `postgres`        | username used for database authentication                                                                        |
+| POSTGRES_PASSWORD                 | `postgres`        | password used for database authentication                                                                        |
+| DOWNLOAD_LOCATION                 | `/Manga`          | Target-Directory for Downloads (Path inside the container! Don't change!)                                        |
+| FLARESOLVERR_URL                  | _empty_           | URL of Flaresolverr-Instance                                                                                     |
+| POSTGRES_COMMAND_TIMEOUT          | `60`              | [Timeout of Postgres-commands](https://www.npgsql.org/doc/connection-string-parameters.html?q=Command%20Timeout) |
+| POSTGRES_CONNECTION_TIMEOUT       | `30`              | Timeout for postgres-database connection                                                                         |
+| CHECK_CHAPTERS_BEFORE_START       | `true`            | Whether to update database downloaded chapters column on startup (takes a while)                                 |
+| MATCH_EXACT_CHAPTER_NAME          | `true`            | Match the stored filename exactly with the filename on disk when checking if a chapter is downloaded             |
+| CREATE_COMICINFO_XML              | `true`            | Whether to include ComicInfo.xml in .cbz-Archives                                                                |
+| ALWAYS_INCLUDE_VOLUME_IN_FILENAME | `false`           | Override to always include a volume in filenames (default as `Vol. 0`)                                           |
+| HTTP_REQUEST_TIMEOUT              | `60`              | Request timeout for Mangaconnectors                                                                              |
+| REQUESTS_PER_MINUTE               | `90`              | Maximum requests per minute for Mangaconnectors (Don't change)                                                   |
+| MINUTES_BETWEEN_NOTIFICATIONS     | `1`               | Interval at which Tranga checks if notifications need to be sent.                                                |
+| HOURS_BETWEEN_NEW_CHAPTERS_CHECK  | `3`               | Interval at which Tranga checks if there are new chapters for a manga                                            |
+| WORKER_TIMEOUT                    | `600`             | Seconds a worker can take before being forcefully cancelled                                                      |
+| CHROMIUM_WAIT_TIME                | `15`              | Seconds Chromium waits for a page to load (used for websites that require JavaScript)                            |
+| PUPPETEER_ARGS                    | _preset in image_ | Space-separated launch arguments for Chromium (see the `Dockerfile` for the preset) (Don't change!)              |
+| TRANGA_CORS__ALLOWED_ORIGIN       | _empty_           | Restrict CORS to this single origin (e.g. `https://tranga.example.com`). If empty, all origins are allowed       |
+| TRANGA_SWAGGER__ENABLED           | `true`            | Whether the Swagger UI (`/swagger`) is served                                                                    |
 
 <!-- CONTRIBUTING -->
 ## Contributing
