@@ -25,6 +25,9 @@ public struct Constants
     public static readonly int RequestsPerMinute =  int.Parse(Environment.GetEnvironmentVariable("REQUESTS_PER_MINUTE") ?? "90");
     public static readonly TimeSpan WorkerTimeout = TimeSpan.FromSeconds(int.Parse(Environment.GetEnvironmentVariable("WORKER_TIMEOUT") ?? "600"));
     
+    // The public Jikan API (api.jikan.moe) was discontinued on 2026-10-01. Tenrai serves the same (Jikan v4 compatible) schema.
+    public static readonly string JikanBaseUrl = Environment.GetEnvironmentVariable("JIKAN_BASE_URL") ?? "https://api.tenrai.org/v1/";
+    
     public static readonly TimeSpan NotificationSendInterval = TimeSpan.FromMinutes(int.Parse(Environment.GetEnvironmentVariable("MINUTES_BETWEEN_NOTIFICATIONS") ?? "1"));
     public static readonly TimeSpan CheckForNewChaptersInterval = TimeSpan.FromHours(int.Parse(Environment.GetEnvironmentVariable("HOURS_BETWEEN_NEW_CHAPTERS_CHECK") ?? "3"));
 }

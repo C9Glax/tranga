@@ -1,5 +1,6 @@
 using System.Text.RegularExpressions;
 using JikanDotNet;
+using JikanDotNet.Config;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
@@ -7,7 +8,10 @@ namespace API.Schema.MangaContext.MetadataFetchers;
 
 public class MyAnimeList : MetadataFetcher
 {
-    private static readonly Jikan Jikan = new ();
+    private static readonly Jikan Jikan = new (new JikanClientConfiguration(), new HttpClient()
+    {
+        BaseAddress = new Uri(Constants.JikanBaseUrl.EndsWith('/') ? Constants.JikanBaseUrl : $"{Constants.JikanBaseUrl}/")
+    });
     private static readonly Regex GetIdFromUrl = new(@"https?:\/\/myanimelist\.net\/manga\/([0-9]+)\/?.*");
     
     public override MetadataSearchResult[] SearchMetadataEntry(Manga manga)
