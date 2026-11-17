@@ -53,8 +53,7 @@ public class Kavita(string baseUrl, string auth) : LibraryConnector(LibraryType.
     public override async Task UpdateLibrary(CancellationToken ct)
     {
         Log.Debug("Updating Libraries...");
-        List<int> ids = await GetLibraries(ct);
-        if (ids.Count < 1)
+        if (await GetLibraries(ct) is not { Count: > 0 } ids)
         {
             Log.Warn("No Kavita libraries found, nothing to scan.");
             return;
