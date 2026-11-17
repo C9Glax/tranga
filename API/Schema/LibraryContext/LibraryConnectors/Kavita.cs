@@ -53,11 +53,19 @@ public class Kavita(string baseUrl, string auth) : LibraryConnector(LibraryType.
     public override async Task UpdateLibrary(CancellationToken ct)
     {
         Log.Debug("Updating Libraries...");
-        List<int> ids = await GetLibraries(ct);
-        JObject requestData = new () { { "ids", JsonConvert.SerializeObject(ids) } };
+        if (await GetLibraries(ct) is not { Count: > 0 } ids)
+        {
+            Log.Warn("No Kavita libraries found, nothing to scan.");
+            return;
+        }
+        JObject requestData = new () { { "ids", JArray.FromObject(ids) } };
 
         await RefreshAuth();
-        await _netClient.PostAsJsonAsync(BuildUri("/api/Library/scan-multiple"), requestData, ct);
+        // requestData is a Newtonsoft JObject: serialize it with Newtonsoft, PostAsJsonAsync (System.Text.Json) would not produce {"ids":[...]}
+        using StringContent content = new(requestData.ToString(Formatting.None), System.Text.Encoding.UTF8, "application/json");
+        HttpResponseMessage response = await _netClient.PostAsync(BuildUri("/api/Library/scan-multiple"), content, ct);
+        if (!response.IsSuccessStatusCode)
+            Log.Warn($"Kavita scan-multiple returned {(int)response.StatusCode}");
     }
 
     /// <summary>
@@ -75,7 +83,7 @@ public class Kavita(string baseUrl, string auth) : LibraryConnector(LibraryType.
         }
 
         JArray librariesJson = JArray.Parse(responseData);
-        return librariesJson.SelectTokens("id").Values<int>().ToList();
+        return librariesJson.SelectTokens("[*].id").Values<int>().ToList();
     }
 
     internal override async Task<bool> Test(CancellationToken ct)

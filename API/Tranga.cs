@@ -235,7 +235,9 @@ public static class Tranga
                     Log.DebugFormat("Updated/Recreated MangaConnectorId for {0} (URL changed)", addMcId.MangaConnectorName);
                 }
             }
-            
+
+            FillMissingMetadata(context, manga, addManga);
+
             result = (manga, mcIdToUse);
         }
         else
@@ -264,7 +266,37 @@ public static class Tranga
 
         DownloadCoverFromMangaconnectorWorker downloadCoverWorker = new (result.Value.Item2);
         AddWorker(downloadCoverWorker);
-        
+
         return result;
+    }
+
+    /// <summary>
+    /// Fills metadata of an existing <paramref name="manga"/> that is still empty, using freshly retrieved <paramref name="from"/>.
+    /// Existing values are never overwritten, collections are only filled when they are empty.
+    /// </summary>
+    private static void FillMissingMetadata(MangaContext context, Manga manga, Manga from)
+    {
+        if (manga.Year is null && from.Year is not null)
+            context.Entry(manga).Property(m => m.Year).CurrentValue = from.Year;
+
+        if (string.IsNullOrWhiteSpace(manga.Description) && !string.IsNullOrWhiteSpace(from.Description))
+            manga.Description = from.Description;
+
+        if (manga.Authors.Count == 0 && from.Authors.Count > 0)
+            foreach (Author author in from.Authors.DistinctBy(a => a.Key))
+                manga.Authors.Add(context.Authors.Find(author.Key) ?? author);
+
+        if (manga.MangaTags.Count == 0 && from.MangaTags.Count > 0)
+            foreach (MangaTag tag in from.MangaTags.DistinctBy(t => t.Tag))
+                manga.MangaTags.Add(context.Tags.Find(tag.Tag) ?? tag);
+
+        // Links and AltTitles are owned by a single Manga: create new instances
+        if (manga.Links.Count == 0 && from.Links.Count > 0)
+            foreach (Link link in from.Links)
+                manga.Links.Add(new Link(link.LinkProvider, link.LinkUrl));
+
+        if (manga.AltTitles.Count == 0 && from.AltTitles.Count > 0)
+            foreach (AltTitle altTitle in from.AltTitles)
+                manga.AltTitles.Add(new AltTitle(altTitle.Language, altTitle.Title));
     }
 }

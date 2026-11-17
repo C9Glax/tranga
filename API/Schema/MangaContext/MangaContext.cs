@@ -108,17 +108,31 @@ public class MangaContext(DbContextOptions<MangaContext> options) : TrangaBaseCo
         if (await Mangas.FirstOrDefaultAsync(m => m.Key == other.Key, ct) is { } f)
             return other.Key;
 
+        // Same series on the same MangaConnector (the title on the site may have changed since it was added)
+        foreach (MangaConnectorId<Manga> otherId in other.MangaConnectorIds)
+            if (await MangaConnectorToManga.FirstOrDefaultAsync(id =>
+                    id.MangaConnectorName == otherId.MangaConnectorName &&
+                    id.IdOnConnectorSite == otherId.IdOnConnectorSite, ct) is { } existingId)
+                return existingId.ObjId;
+
         var mangas = await MangaWithMetadata().Select(m => new
         {
             Id = m.Key,
             AltTitles = m.AltTitles.Select(a => a.Title).ToList(),
-            Links = m.Links.Select(l => l.LinkUrl).ToList()
+            Links = m.Links.Select(l => l.LinkUrl).ToList(),
+            ConnectorIds = m.MangaConnectorIds.Select(id => new { id.MangaConnectorName, id.IdOnConnectorSite }).ToList()
         }).ToListAsync(ct);
 
+        // A Manga that is already linked to a *different* series on the same MangaConnector is not the same Manga
+        // (e.g. "One Piece" and "One Piece - Digital Colored Comics" share alt-titles and links on some sites).
+        bool ConflictsOnSameConnector(IEnumerable<(string connector, string idOnSite)> existing) =>
+            other.MangaConnectorIds.Any(o => existing.Any(e =>
+                e.connector == o.MangaConnectorName && e.idOnSite != o.IdOnConnectorSite));
+
         if (mangas.FirstOrDefault(m =>
-                m.Id == other.Key ||
-                m.AltTitles.Any(t => other.AltTitles.Any(ot => ot.Title.Equals(t)) ||
-                m.Links.Any(l => other.Links.Any(ol => ol.LinkUrl == l))))
+                (m.AltTitles.Any(t => other.AltTitles.Any(ot => ot.Title.Equals(t))) ||
+                 m.Links.Any(l => other.Links.Any(ol => ol.LinkUrl == l))) &&
+                !ConflictsOnSameConnector(m.ConnectorIds.Select(c => (c.MangaConnectorName, c.IdOnConnectorSite))))
             is { } manga)
             return manga.Id;
 
