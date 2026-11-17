@@ -117,14 +117,12 @@ const { t } = useI18n();
 const props = defineProps<{ test?: CustomSourceTestState }>();
 const emit = defineEmits<{ pick: [step: CustomSourceTestStep, url: string] }>();
 
-const stepLabels = computed(
-    (): Record<CustomSourceTestStep, string> => ({
-        search: t('customSource.results.steps.search'),
-        series: t('customSource.results.steps.series'),
-        chapters: t('customSource.results.steps.chapters'),
-        images: t('customSource.results.steps.images'),
-    }),
-);
+const stepLabels = computed((): Record<CustomSourceTestStep, string> => ({
+    search: t('customSource.results.steps.search'),
+    series: t('customSource.results.steps.series'),
+    chapters: t('customSource.results.steps.chapters'),
+    images: t('customSource.results.steps.images'),
+}));
 
 const rows = computed<Row[]>(() => (props.test?.result?.rows ?? []) as Row[]);
 

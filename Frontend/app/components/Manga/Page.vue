@@ -110,29 +110,25 @@ const { data: libraryMappings } = useTranga<GetLibrariesMappingsByMangaIdRespons
 });
 
 const navigation = computed((): TrangaPageTitleProps => {
-    const actionItems: NavigationMenuItem[] = (props.actions?.(props.manga) ?? []).map(
-        (action): NavigationMenuItem => ({
-            label: action.label,
-            icon: action.icon,
-            to: action.to,
-            target: action.target,
-            onSelect: action.onClick
-                ? (e: Event) => {
-                      const handlers = Array.isArray(action.onClick) ? action.onClick : [action.onClick!];
-                      handlers.forEach((handler) => void handler(e as unknown as MouseEvent));
-                  }
-                : undefined,
-        }),
-    );
+    const actionItems: NavigationMenuItem[] = (props.actions?.(props.manga) ?? []).map((action): NavigationMenuItem => ({
+        label: action.label,
+        icon: action.icon,
+        to: action.to,
+        target: action.target,
+        onSelect: action.onClick
+            ? (e: Event) => {
+                  const handlers = Array.isArray(action.onClick) ? action.onClick : [action.onClick!];
+                  handlers.forEach((handler) => void handler(e as unknown as MouseEvent));
+              }
+            : undefined,
+    }));
 
-    const komgaLinkItems: NavigationMenuItem[] = (libraryMappings.value ?? []).map(
-        (mapping): NavigationMenuItem => ({
-            label: t('manga.viewInLibrary'),
-            to: mapping.seriesUrl,
-            icon: 'i-lucide-external-link',
-            target: '_blank',
-        }),
-    );
+    const komgaLinkItems: NavigationMenuItem[] = (libraryMappings.value ?? []).map((mapping): NavigationMenuItem => ({
+        label: t('manga.viewInLibrary'),
+        to: mapping.seriesUrl,
+        icon: 'i-lucide-external-link',
+        target: '_blank',
+    }));
 
     return {
         title: { label: t('manga.nav.manga'), type: 'label' },
