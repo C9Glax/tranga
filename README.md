@@ -20,7 +20,7 @@
   </table>
 
   > [!NOTE]
-  > Looking for the next-generation Tranga (multi-service architecture with its own frontend)?
+  > Looking for the next-generation Tranga with [custom connectors](https://github.com/C9Glax/tranga/tree/external-connectors#custom-sources) (add websites without writing any code)?
   > Check out the [`external-connectors`](https://github.com/C9Glax/tranga/tree/external-connectors) branch.
 
 </div>
