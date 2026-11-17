@@ -17,15 +17,11 @@
       <th><img alt="GitHub branch check runs" src="https://img.shields.io/github/check-runs/c9glax/tranga/cuttingedge?label=cuttingedge"></th>
       <td><img alt="Last Run" src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fapi.github.com%2Frepos%2Fc9glax%2Ftranga%2Factions%2Fworkflows%2Fdocker-image-cuttingedge.yml%2Fruns%3Fper_page%3D1&query=workflow_runs%5B0%5D.created_at&label=Last%20Run"></td>
     </tr>
-    <tr>
-      <th><img alt="GitHub branch check runs" src="https://img.shields.io/github/check-runs/c9glax/tranga/testing?label=testing"></th>
-      <td><img alt="Last Run" src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fapi.github.com%2Frepos%2Fc9glax%2Ftranga%2Factions%2Fworkflows%2Fdocker-image-testing.yml%2Fruns%3Fper_page%3D1&query=workflow_runs%5B0%5D.created_at&label=Last%20Run"></td>
-    </tr>
-    <tr>
-      <th><img alt="GitHub branch check runs" src="https://img.shields.io/github/check-runs/c9glax/tranga/oldstable?label=oldstable"></th>
-      <td><img alt="Last Run" src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fapi.github.com%2Frepos%2Fc9glax%2Ftranga%2Factions%2Fworkflows%2Fdocker-image-oldstable.yml%2Fruns%3Fper_page%3D1&query=workflow_runs%5B0%5D.created_at&label=Last%20Run"></td>
-    </tr>
   </table>
+
+  > [!NOTE]
+  > Looking for the next-generation Tranga with [custom connectors](https://github.com/C9Glax/tranga/tree/external-connectors#custom-sources) (add websites without writing any code)?
+  > Check out the [`external-connectors`](https://github.com/C9Glax/tranga/tree/external-connectors) branch.
 
 </div>
 
@@ -35,7 +31,7 @@
 Tranga can download Chapters and Metadata from "Scanlation" sites such as 
 
 - [MangaDex.org](https://mangadex.org/) (Multilingual)
-- [MangaWorld](https://www.mangaworld.cx) (it)
+- [MangaWorld](https://www.mangaworld.cx) (it) thanks [@bubez81](https://github.com/bubez81)
 - [AsuraComic](https://asurascanz.com) (en) thanks [@yacob841](https://github.com/yacob841)
 - [WeebCentral](https://weebcentral.com/) (en) thanks [@TheyCallMeTravis](https://github.com/TheyCallMeTravis)
 - ❓ Open an [issue](https://github.com/C9Glax/tranga/issues/new?assignees=&labels=New+Connector&projects=&template=new_connector.yml&title=%5BNew+Connector%5D%3A+)
@@ -132,6 +128,23 @@ The container also spins up a Swagger site at `http://<url>/swagger`.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
+### Prerequisites
+
+- [Docker](https://docs.docker.com/get-docker/) with [Docker Compose](https://docs.docker.com/compose/install/): the recommended
+  way to run Tranga. The image comes with everything Tranga needs, including Chromium for websites that require JavaScript.
+- [PostgreSQL](https://www.postgresql.org/) as database: the provided `docker-compose.yaml` starts a `postgres:17` container
+  for you. If you bring your own, point `POSTGRES_HOST`, `POSTGRES_DB`, `POSTGRES_USER` and `POSTGRES_PASSWORD` to it.
+- A directory for your downloads, mounted to `/Manga` (ideally where [Komga](https://komga.org/) or [Kavita](https://www.kavitareader.com/) can access it).
+
+Optional:
+
+- [FlareSolverr](https://github.com/FlareSolverr/FlareSolverr) for websites protected by Cloudflare (set `FLARESOLVERR_URL`)
+- [Komga](https://komga.org/) or [Kavita](https://www.kavitareader.com/) to have your library scanned after new chapters are downloaded
+- A frontend such as [tranga-website](https://github.com/C9Glax/tranga-website) (already included in the `docker-compose.yaml`)
+
+Want to build Tranga from source or contribute? You will need the [.NET 10 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/10.0)
+and a PostgreSQL database, see [CONTRIBUTING](CONTRIBUTING.md#how-to-test-locally).
+
 ### Docker
 
 Built for AMD64.
@@ -142,42 +155,30 @@ downloaded (where Komga/Kavita can access them for example).
 The file also includes [tranga-website](https://github.com/C9Glax/tranga-website) as frontend. For its configuration refer to the
 [Tranga-Website Repository](https://github.com/C9Glax/tranga-website) README.
 
-| Environment Variable              | default          | Description                                                                                                      |
-|-----------------------------------|------------------|------------------------------------------------------------------------------------------------------------------|
-| PORT                              | `6531`           | Port for the API Endpoints (Don't change this unless you know what you are doing)                                |
-| POSTGRES_HOST                     | `tranga-pg:5432` | host-address of postgres database (Don't change!)                                                                |
-| POSTGRES_DB                       | `postgres`       | name of database                                                                                                 |
-| POSTGRES_USER                     | `postgres`       | username used for database authentication                                                                        |
-| POSTGRES_PASSWORD                 | `postgres`       | password used for database authentication                                                                        |
-| DOWNLOAD_LOCATION                 | `/Manga`         | Target-Directory for Downloads (Path inside the container! Don't change!)                                        |
-| FLARESOLVERR_URL                  | <empty>          | URL of Flaresolverr-Instance                                                                                     |
-| POSTGRES_COMMAND_TIMEOUT          | `60`             | [Timeout of Postgres-commands](https://www.npgsql.org/doc/connection-string-parameters.html?q=Command%20Timeout) |
-| POSTGRES_CONNECTION_TIMEOUT       | `30`             | Timeout for postgres-databaes connection                                                                         |
-| CHECK_CHAPTERS_BEFORE_START       | `true`           | Whether to update database downloaded chapters column on startup (takes a while)                                 |
-| MATCH_EXACT_CHAPTER_NAME          | `true`           | Match the stored filename exactly with the filename on disk when checking if a chapter is downloaded             |
-| CREATE_COMICINFO_XML              | `true`           | Whether to include ComicInfo.xml in .cbz-Archives                                                                |
-| ALWAYS_INCLUDE_VOLUME_IN_FILENAME | `false`          | Override to always include a volume in filenames (default as `Vol. 0`)                                           |
-| HTTP_REQUEST_TIMEOUT              | `10`             | Request timeout for Mangaconnectors                                                                              |
-| REQUESTS_PER_MINUTE               | `90`             | Maximum requests per minute for Mangaconnectors (Don't change)                                                   |
-| MINUTES_BETWEEN_NOTIFICATIONS     | `1`              | Interval at which Tranga checks if notifications need to be sent.                                                |
-| HOURS_BETWEEN_NEW_CHAPTERS_CHECK  | `3`              | Interval at which Tranga checks if there are new chapters for a manga                                            |
-| WORKER_TIMEOUT                    | `600`            | Seconds a worker can take before being forcefully cancelled                                                      |
-
-### Bare-Metal
-
-While not intended, if your machine can run .NET (and is AMD64, ARM64, ARMv7), it can run Tranga without docker.
-
-Configuration-Files are stored at
-- Linux `/usr/share/tranga-api`
-- Windows `%appdata%/tranga-api`
-
-Downloads (default) are stored in (see `DOWNLOAD_LOCATION`)
-- Linux `/Manga`
-- Windows `%currentDirectory%/Downloads`
-
-### Prerequisits
-
-[.NET 10](https://dotnet.microsoft.com/en-us/download/dotnet/10.0)
+| Environment Variable              | default           | Description                                                                                                      |
+|-----------------------------------|-------------------|------------------------------------------------------------------------------------------------------------------|
+| PORT                              | `6531`            | Port for the API Endpoints (Don't change this unless you know what you are doing)                                |
+| POSTGRES_HOST                     | `tranga-pg:5432`  | host-address of postgres database (Don't change!)                                                                |
+| POSTGRES_DB                       | `postgres`        | name of database                                                                                                 |
+| POSTGRES_USER                     | `postgres`        | username used for database authentication                                                                        |
+| POSTGRES_PASSWORD                 | `postgres`        | password used for database authentication                                                                        |
+| DOWNLOAD_LOCATION                 | `/Manga`          | Target-Directory for Downloads (Path inside the container! Don't change!)                                        |
+| FLARESOLVERR_URL                  | _empty_           | URL of Flaresolverr-Instance                                                                                     |
+| POSTGRES_COMMAND_TIMEOUT          | `60`              | [Timeout of Postgres-commands](https://www.npgsql.org/doc/connection-string-parameters.html?q=Command%20Timeout) |
+| POSTGRES_CONNECTION_TIMEOUT       | `30`              | Timeout for postgres-database connection                                                                         |
+| CHECK_CHAPTERS_BEFORE_START       | `true`            | Whether to update database downloaded chapters column on startup (takes a while)                                 |
+| MATCH_EXACT_CHAPTER_NAME          | `true`            | Match the stored filename exactly with the filename on disk when checking if a chapter is downloaded             |
+| CREATE_COMICINFO_XML              | `true`            | Whether to include ComicInfo.xml in .cbz-Archives                                                                |
+| ALWAYS_INCLUDE_VOLUME_IN_FILENAME | `false`           | Override to always include a volume in filenames (default as `Vol. 0`)                                           |
+| HTTP_REQUEST_TIMEOUT              | `60`              | Request timeout for Mangaconnectors                                                                              |
+| REQUESTS_PER_MINUTE               | `90`              | Maximum requests per minute for Mangaconnectors (Don't change)                                                   |
+| MINUTES_BETWEEN_NOTIFICATIONS     | `1`               | Interval at which Tranga checks if notifications need to be sent.                                                |
+| HOURS_BETWEEN_NEW_CHAPTERS_CHECK  | `3`               | Interval at which Tranga checks if there are new chapters for a manga                                            |
+| WORKER_TIMEOUT                    | `600`             | Seconds a worker can take before being forcefully cancelled                                                      |
+| CHROMIUM_WAIT_TIME                | `15`              | Seconds Chromium waits for a page to load (used for websites that require JavaScript)                            |
+| PUPPETEER_ARGS                    | _preset in image_ | Space-separated launch arguments for Chromium (see the `Dockerfile` for the preset) (Don't change!)              |
+| TRANGA_CORS__ALLOWED_ORIGIN       | _empty_           | Restrict CORS to this single origin (e.g. `https://tranga.example.com`). If empty, all origins are allowed       |
+| TRANGA_SWAGGER__ENABLED           | `true`            | Whether the Swagger UI (`/swagger`) is served                                                                    |
 
 <!-- CONTRIBUTING -->
 ## Contributing
