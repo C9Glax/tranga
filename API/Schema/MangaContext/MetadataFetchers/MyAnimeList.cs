@@ -1,5 +1,6 @@
 using System.Text.RegularExpressions;
 using JikanDotNet;
+using JikanDotNet.Config;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
@@ -7,7 +8,10 @@ namespace API.Schema.MangaContext.MetadataFetchers;
 
 public class MyAnimeList : MetadataFetcher
 {
-    private static readonly Jikan Jikan = new ();
+    private static readonly Jikan Jikan = new (new JikanClientConfiguration(), new HttpClient()
+    {
+        BaseAddress = new Uri(Constants.JikanBaseUrl.EndsWith('/') ? Constants.JikanBaseUrl : $"{Constants.JikanBaseUrl}/")
+    });
     private static readonly Regex GetIdFromUrl = new(@"https?:\/\/myanimelist\.net\/manga\/([0-9]+)\/?.*");
     
     public override MetadataSearchResult[] SearchMetadataEntry(Manga manga)
@@ -84,17 +88,48 @@ public class MyAnimeList : MetadataFetcher
             return;
         }
 
-        dbManga.Name = resultData.Titles.First().Title;
-        dbManga.Description = resultData.Synopsis;
-        dbManga.AltTitles.Clear();
-        dbManga.AltTitles = resultData.Titles.Select(t => new AltTitle(t.Type, t.Title)).ToList();
-        dbManga.Authors.Clear();
-        dbManga.Authors = resultData.Authors.Select(a => new Author(a.Name)).ToList();
+        // Only fill in what is missing: the name, description and authors chosen by the user or the MangaConnector are kept.
+        if (string.IsNullOrWhiteSpace(dbManga.Description) && !string.IsNullOrWhiteSpace(resultData.Synopsis))
+            dbManga.Description = resultData.Synopsis;
+
+        if (dbManga.Year is null && resultData.Published?.From?.Year is { } year)
+            dbContext.Entry(dbManga).Property(m => m.Year).CurrentValue = (uint)year;
+
+        if (dbManga.Authors.Count == 0)
+            foreach (string authorName in resultData.Authors.Select(a => AuthorName(a.Name)).Distinct())
+            {
+                Author author = new (authorName);
+                dbManga.Authors.Add(await dbContext.Authors.FindAsync([author.Key], token) ?? author);
+            }
+
+        foreach (TitleEntry title in resultData.Titles)
+        {
+            if (string.IsNullOrWhiteSpace(title.Title) || title.Title.Length > 256 ||
+                title.Title.Equals(dbManga.Name, StringComparison.InvariantCultureIgnoreCase) ||
+                dbManga.AltTitles.Any(t => t.Title.Equals(title.Title, StringComparison.InvariantCultureIgnoreCase)))
+                continue;
+            dbManga.AltTitles.Add(new AltTitle(TitleLanguage(title.Type), title.Title));
+        }
 
         if (await dbContext.Sync(token, GetType(), "Update metadata") is { success: true })
         {
             Log.InfoFormat("Updated Metadata: {0}", metadataEntry.MangaId);
         }
     }
-    
+
+    /// <summary>
+    /// MyAnimeList lists people as "Last, First". Comma separated names would be split into several people (e.g. ComicInfo Writer).
+    /// </summary>
+    private static string AuthorName(string malName) =>
+        malName.Split(',', 2, StringSplitOptions.TrimEntries) is [{ Length: > 0 } last, { Length: > 0 } first] ? $"{first} {last}" : malName.Trim();
+
+    private static string TitleLanguage(string? type) => type switch
+    {
+        "English" => "en",
+        "Japanese" => "ja",
+        "German" => "de",
+        "French" => "fr",
+        "Spanish" => "es",
+        _ => "und"
+    };
 }
