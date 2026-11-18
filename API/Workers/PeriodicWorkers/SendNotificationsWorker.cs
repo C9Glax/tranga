@@ -1,4 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
+using System.Text.RegularExpressions;
 using API.Schema.NotificationsContext;
 using API.Schema.NotificationsContext.NotificationConnectors;
 using Microsoft.EntityFrameworkCore;
@@ -24,6 +26,15 @@ public class SendNotificationsWorker(TimeSpan? interval = null, IEnumerable<Base
         NotificationsContext = GetContext<NotificationsContext>(serviceScope);
     }
     
+    private static readonly Regex NumberRex = new(@"\d+(?:\.\d+)?", RegexOptions.Compiled);
+
+    /// <summary>
+    /// Sort key for bundled messages: the first number in the message ("Ch. 9" before "Ch. 10")
+    /// </summary>
+    private static double FirstNumber(string message) =>
+        NumberRex.Match(message) is { Success: true } m &&
+        double.TryParse(m.Value, NumberStyles.Float, CultureInfo.InvariantCulture, out double n) ? n : double.MaxValue;
+
     protected override async Task<BaseWorker[]> DoWorkInternal()
     {
         Log.Debug("Sending notifications...");
@@ -47,7 +58,11 @@ public class SendNotificationsWorker(TimeSpan? interval = null, IEnumerable<Base
             }
             connectors.ForEach(connector =>
             {
-                connector.SendNotification(groupedNotification.Title, string.Join(", ", groupedNotification.Notifications.Select(n => n.Message)));
+                connector.SendNotification(groupedNotification.Title, string.Join(", ", groupedNotification.Notifications
+                    .Select(n => n.Message)
+                    .Distinct()
+                    .OrderBy(FirstNumber)
+                    .ThenBy(m => m, StringComparer.OrdinalIgnoreCase)));
             });
             groupedNotification.Notifications.ForEach(n => n.IsSent = true);
         }

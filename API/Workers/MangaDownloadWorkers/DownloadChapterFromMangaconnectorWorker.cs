@@ -217,9 +217,10 @@ public class DownloadChapterFromMangaconnectorWorker(MangaConnectorId<Chapter> c
         if(await ActionsContext.Sync(CancellationToken, GetType(), "Download complete") is { success: false } actionsContextException)
             Log.Error($"Failed to save database changes: {actionsContextException.exceptionMessage}");
 
+        // One notification per Manga: chapters of the same Manga are bundled by title (see SendNotificationsWorker)
         await NotificationsContext.Notifications.AddAsync(new Notification(
-            "Chapter downloaded",
-            $"{chapter.ParentManga.Name} Ch. {chapter.ChapterNumber} - {chapter.FileName}"
+            chapter.ParentManga.Name,
+            $"Ch. {chapter.ChapterNumber}"
             ), CancellationToken);
         if(await NotificationsContext.Sync(CancellationToken, GetType(), "Download complete") is { success: false } notificationsContextException)
             Log.Error($"Failed to save database changes: {notificationsContextException.exceptionMessage}");
