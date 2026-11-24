@@ -34,7 +34,9 @@
         "links": "Links",
         "apiDocs": "API Docs",
         "github": "Github",
-        "tranga": "Tranga"
+        "tranga": "Tranga",
+        "weblate": "Weblate",
+        "libraries": "Bibliotheken"
     },
     "auth": {
         "login": {
@@ -81,7 +83,8 @@
         "tabs": {
             "notifications": "Benachrichtigungen",
             "behavior": "Verhalten",
-            "security": "Sicherheit"
+            "security": "Sicherheit",
+            "libraries": "Bibliotheken"
         },
         "about": {
             "service": "Dienst",
@@ -140,9 +143,18 @@
                 "connectionFailedFallback": "Konnte die Verbindung nicht verifizieren.",
                 "linkFailed": "Konnte Manga nicht verbinden.",
                 "linked": "{count} Manga verbunden.",
-                "noneLinked": "Kein neuer Manga mit diesem Namen gepaart."
+                "noneLinked": "Kein neuer Manga mit diesem Namen gepaart.",
+                "addFailed": "Bibliothek hinzufügen fehlgeschlagen.",
+                "addFailedFallback": "Konnte die Bibliothek nicht hinzufügen.",
+                "added": "Bibliothek hinzugefügt.",
+                "removeFailed": "Bibliothek entfernen fehlgeschlagen.",
+                "removed": "Bibliothek entfernt."
             },
-            "linkManga": "Manga verbinden"
+            "linkManga": "Manga verbinden",
+            "add": "Bibliothek hinzufügen",
+            "type": "Bibliothek-Typ",
+            "kavitaLibrary": "Kavita Bibliothek",
+            "kavitaLibraryDescription": "Teste die Verbindung um die Bibliotheken auf dem Kavita server zu laden. Wähle die Bibliothek welche Tranga's Manga enthält."
         },
         "notifications": {
             "add": "Erweiterung hinzufügen",
@@ -198,7 +210,9 @@
         },
         "moreDownloadLinks": "Mehr Download Links",
         "mergeInto": "Zusammenführen in…",
-        "remove": "Entfernen"
+        "remove": "Entfernen",
+        "viewInLibrary": "In Bibliothek anzeigen",
+        "syncToLibrary": "Mit Bibliothek synchronisieren"
     },
     "chapters": {
         "downloaded": "Heruntergeladen",
@@ -217,18 +231,56 @@
         "empty": {
             "title": "Noch keine Kapitel",
             "description": "Kapitel erscheinen hier sobald sie gefunden wurden."
-        }
+        },
+        "volumeAbbr": "Vol",
+        "chapterAbbr": "Kap"
     },
     "toast": {
         "metadataSetFailed": "Konnte Metadaten nicht als Quelle setzen!",
         "mangaMerged": "Manga zusammengeführt",
-        "mangaMergeFailed": "Konnte Manga nicht zusammenführen!"
+        "mangaMergeFailed": "Konnte Manga nicht zusammenführen!",
+        "chapterDeleted": "Kapitel gelöscht",
+        "chapterDeleteFailed": "Konnte Kapitel nicht löschen!",
+        "setAsSource": "Als Quelle festgelegt!",
+        "removedAsSource": "Als Quelle entfernt",
+        "setDownloadLinkSourceFailed": "Konnte Downloadlink nicht als Quelle festlegen!",
+        "removeDownloadLinkSourceFailed": "Konnte Downloadlink nicht als Quelle entfernen!",
+        "mangaRemoved": "Manga entfernt",
+        "mangaRemoveFailed": "Konnte Manga nicht entfernen!",
+        "syncQueued": "Bibliothek synchornisierung in die Warteschlange gestellt!",
+        "syncFailed": "Konnte Bibliothek synchornisierung nicht in die Warteschlange stellen!"
     },
     "tour": {
         "skip": "Tour überspringen",
         "nextStep": "Nächster Schritt",
         "letsGo": "Auf geht's",
-        "finish": "Beenden"
+        "finish": "Beenden",
+        "steps": {
+            "intro": {
+                "body": "Wir suchen einen Manga und downloaden die ersten Kapitel. Das dauert nur eine Minute."
+            },
+            "searchButton": {
+                "title": "Suche nach einem Manga"
+            },
+            "useAsSource": {
+                "title": "Füge den Manga deiner Bibliothek hinzu"
+            },
+            "goToManga": {
+                "title": "Öffne die Manga-Seite",
+                "body": "Hier kannst du die Downloadlinks sehen und den Fortschritt."
+            },
+            "moreDownloadLinks": {
+                "title": "Suche nach Download-Quellen",
+                "body": "Suche in Erweiterungen nach Kapitel dieser Serie."
+            },
+            "addLink": {
+                "title": "Überprüfe die Ergebnisse",
+                "body": "Tranga hat bereits alle Erweiterungen nach dieser Serie durchsucht und die Suchergebnisse unten aufgelistet. Sollte keines der Ergebnisse das gesucht sein, suche nach einem anderen Titel, oder füge einen Link zu einer Serie ein, wähle die Erweiterung und klicke \"Link hinzufügen\"."
+            },
+            "outro": {
+                "body": "Tranga wird im Hintergrund die Kapitel herunterladen. Um den Fortschritt zu überprüfen gehe zum Manga und dann Manga Downloads."
+            }
+        }
     },
     "customSource": {
         "optional": "Optional.",
@@ -257,6 +309,10 @@
             "pages": {
                 "title": "Seiten",
                 "description": "Bilder finden"
+            },
+            "series": {
+                "title": "Serie",
+                "description": "Finde den Einband"
             }
         },
         "format": {
@@ -299,7 +355,10 @@
             "import": "Importieren",
             "patternMatches": "Treffer.",
             "patternNoGroups": "Keine definierten Gruppen.",
-            "patternEmptyGroup": "(leer)"
+            "patternEmptyGroup": "(leer)",
+            "languagesDescription": "Sprachen in denen die Webseite veröffentlicht, als Sprachcodes wie en, en-us oder pt-BR.",
+            "flareSolverrDescription": "Führe Anfragen mit FlareSolverr aus, für Cloudflare geschützte Seiten.",
+            "reviewHint": "Überprüfe und teste vor dem Speichern."
         },
         "search": {
             "urlLabel": "Such-URL",
@@ -323,7 +382,8 @@
             "intro": "Findet die Seitenbilder eines Kapitels.",
             "urlLabel": "Seiten URL",
             "imageAttribute": "Bildattribut",
-            "testLabel": "Kapitel URL"
+            "testLabel": "Kapitel URL",
+            "pageLinks": "Seitenlinks"
         },
         "field": {
             "selectorPlaceholder": "CSS-Selektor oder XPath",
@@ -340,12 +400,14 @@
             "steps": {
                 "search": "Suchen",
                 "chapters": "Kapitel",
-                "images": "Seiten"
+                "images": "Seiten",
+                "series": "Serie"
             },
             "running": {
                 "search": "Der Suchtest wird durchgeführt…",
                 "chapters": "Der Kapiteltest wird durchgeführt…",
-                "images": "Der Seitentest wird durchgeführt…"
+                "images": "Der Seitentest wird durchgeführt…",
+                "series": "Führe den Serientest aus…"
             },
             "emptyTitle": "Noch nichts gespeichert",
             "cannotTest": "Dieser Schritt kann noch nicht getestet werden",
@@ -353,11 +415,19 @@
             "requestedWithStatus": "Angefragt: {url} (HTTP {status})",
             "showing": "Zeige die ersten {shown} von {total}.",
             "useForChapters": "Für den Kapiteltest verwenden",
-            "useForPages": "Für den Seitentest verwenden"
+            "useForPages": "Für den Seitentest verwenden",
+            "idle": "Was der Selektor von der echten Webseite extrahiert.",
+            "emptyDescription": "Nutze den obigen Testknopf um auf der echten Webseite zu testen. Das Ergebnis wird hier angezeigt um bleibt sichtbar wenn die Selektoren geändert werden."
         },
         "texts": {
             "html": {
-                "chapterItem": "Ein Element pro Kapitel."
+                "chapterItem": "Ein Element pro Kapitel.",
+                "introTitle": "Beschreibe die Webseite mit Selektoren",
+                "chapterItemLabel": "Kapitel Item-Selektor",
+                "imageLabel": "Bild-Selektor"
+            },
+            "json": {
+                "imageLabel": "Bilder URL-Pfade"
             }
         },
         "sources": {
@@ -372,7 +442,101 @@
             "notFound": "Quelle nicht gefunden",
             "backToSources": "Zurück zu den Quellen",
             "saveSubmit": "Änderungen speichern",
-            "saved": "{name} gespeichert."
+            "saved": "{name} gespeichert.",
+            "description": "Tranga durchsucht alle wenn nach einem Mangadownload gesucht wird. Webseiten die nicht eingebaut sind, können als benutzerdefinierte Quelle hinzugefügt werden."
+        },
+        "series": {
+            "urlLabel": "Serien Seiten-URL",
+            "cover": "Einband",
+            "testLabel": "Serien URL"
+        }
+    },
+    "downloadLinks": {
+        "match": "Verbinden",
+        "unmatch": "Lösen",
+        "searchResult": "Suchergebnis",
+        "searchPlaceholder": "Nach Begriff suchen, oder Manga URL direkt einfügen",
+        "extension": "Erweiterung",
+        "addLink": "Link hinzufügen",
+        "addFailed": "Downloadlink hinzufügen fehlgeschlagen.",
+        "addFailedFallback": "Konnte Downloadlink nicht hinzufügen.",
+        "added": "Downloadlink hinzugefügt."
+    },
+    "metadata": {
+        "goToManga": "Gehe zum Manga",
+        "useAsSource": "Als Quelle für Manga verwenden",
+        "isSource": "Ist Quelle"
+    },
+    "downloads": {
+        "includeFinished": "Inklusive vollständiger Downloads"
+    },
+    "tasks": {
+        "state": {
+            "Blocked": {
+                "label": "Blockiert"
+            },
+            "Queued": {
+                "label": "Warteschlange"
+            },
+            "Running": {
+                "label": "Laufend",
+                "description": "Gerade durch einen Worker durchgeführt."
+            },
+            "Completed": {
+                "label": "Beendet",
+                "description": "Erfolgreich beendet."
+            },
+            "Failed": {
+                "label": "Fehlgeschlagen",
+                "description": "Beendet mit einer Ausnahme."
+            }
+        },
+        "chaptersCount": "{count} Kapitel | {count} Kapitel",
+        "columns": {
+            "type": "Typ",
+            "state": "Status",
+            "manga": "Manga",
+            "chapter": "Kapitel",
+            "lastRun": "Letzte Ausführung",
+            "interval": "Intervall",
+            "nextRun": "Nächte Ausführung"
+        },
+        "empty": {
+            "title": "Keine Vorgänge",
+            "description": "Vorgänge werden hier angezeigt sobald sie in der Warteschlange sind."
+        },
+        "logs": {
+            "columns": {
+                "time": "Zeit"
+            }
+        },
+        "filters": {
+            "manga": "Manga",
+            "allMangas": "Alle Manga",
+            "type": "Typ",
+            "allTypes": "Alle Typen",
+            "state": "Status",
+            "allStates": "Alle Status",
+            "activeDownloads": "Aktive Downloads"
+        },
+        "lastRun": "Letzte Ausführung",
+        "exportCsv": "CSV exportieren"
+    },
+    "workers": {
+        "status": {
+            "Busy": "Beschäftigt",
+            "Idle": "Wartend"
+        },
+        "unknownTask": "Unbekannter Vorgang",
+        "columns": {
+            "worker": "Worker",
+            "status": "Status",
+            "currentTask": "Aktueller Vorgang",
+            "startedAt": "Begonnen um"
+        },
+        "empty": {
+            "title": "Keine Worker",
+            "description": "Keine Worker laufen gerade."
         }
     }
 }
