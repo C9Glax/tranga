@@ -18,13 +18,16 @@ public sealed class Mangaworld : MangaConnector
             "mangaworld.bz","www.mangaworld.bz",
             "mangaworld.fun","www.mangaworld.fun",
             "mangaworld.ac","www.mangaworld.ac",
-            "mangaworld.mx","www.mangaworld.mx"
+            "mangaworld.mx","www.mangaworld.mx",
+            "mangaworld.me","www.mangaworld.me"
         ],
-        "https://www.mangaworld.mx/public/assets/seo/favicon-96x96.png?v=3"
+        "https://www.mangaworld.me/public/assets/seo/favicon-96x96.png?v=3"
     )
     {
         downloadClient = new HttpDownloadClient();
     }
+
+    private const string BaseUrl = "https://www.mangaworld.me/";
 
     public override (Manga, MangaConnectorId<Manga>)[] SearchManga(string mangaSearchName)
     {
@@ -43,7 +46,7 @@ public sealed class Mangaworld : MangaConnector
 
     private (Manga, MangaConnectorId<Manga>)[] SearchOnce(string query)
     {
-        Uri baseUri = new("https://www.mangaworld.mx/");
+        Uri baseUri = new(BaseUrl);
         Uri searchUrl = new(baseUri, "archive?keyword=" + HttpUtility.UrlEncode(query));
 
         using HttpResponseMessage res =
@@ -103,7 +106,7 @@ public sealed class Mangaworld : MangaConnector
         string id = parts[0];
         string slug = parts[1];
 
-        Uri seriesUrl = new Uri($"https://www.mangaworld.mx/manga/{id}/{slug}/");
+        Uri seriesUrl = new Uri($"{BaseUrl}manga/{id}/{slug}/");
 
         using HttpResponseMessage res =
             downloadClient.MakeRequest(seriesUrl.ToString(), RequestType.MangaInfo).Result;
@@ -144,10 +147,10 @@ public sealed class Mangaworld : MangaConnector
         if (!string.IsNullOrWhiteSpace(detailRawStatus))
             status = MapItalianStatus(detailRawStatus);
 
-        // Generi (badge/link dopo l'etichetta "Generi:")
+        // Generi: new site <ul class="hero-chips"> links; old site links after the label "Generi:"
         List<MangaTag> tags =
-            doc.DocumentNode
-               .SelectNodes("//span[normalize-space(text())='Generi:']/following-sibling::a")
+            (doc.DocumentNode.SelectNodes("//ul[contains(@class,'hero-chips')]//a[contains(@href,'genre=')]")
+             ?? doc.DocumentNode.SelectNodes("//span[normalize-space(text())='Generi:']/following-sibling::a"))
                ?.Select(a => HtmlEntity.DeEntitize(a.InnerText).Trim())
                .Where(s => !string.IsNullOrWhiteSpace(s))
                .Distinct(StringComparer.OrdinalIgnoreCase)
@@ -198,7 +201,7 @@ public sealed class Mangaworld : MangaConnector
 
         string id = parts[0];
         string slug = parts[1];
-        string seriesUrl = $"https://www.mangaworld.mx/manga/{id}/{slug}/";
+        string seriesUrl = $"{BaseUrl}manga/{id}/{slug}/";
 
         string html = FetchHtmlWithFallback(seriesUrl, out Uri baseUri);
         if (string.IsNullOrEmpty(html))
@@ -215,7 +218,7 @@ public sealed class Mangaworld : MangaConnector
 
     internal override string[] GetChapterImageUrls(MangaConnectorId<Chapter> chapterId)
     {
-        string raw = chapterId.WebsiteUrl ?? $"https://www.mangaworld.mx/manga/{chapterId.IdOnConnectorSite}";
+        string raw = chapterId.WebsiteUrl ?? $"{BaseUrl}manga/{chapterId.IdOnConnectorSite}";
         string url = EnsureReaderUrl(raw);
 
         if (downloadClient.MakeRequest(url, RequestType.MangaInfo).Result is not { IsSuccessStatusCode: true } res)
@@ -227,7 +230,10 @@ public sealed class Mangaworld : MangaConnector
         HtmlDocument doc = new();
         doc.LoadHtml(html);
 
-        HtmlNodeCollection imageNodes = doc.DocumentNode.SelectNodes("//img[@data-src or @src or @srcset]") ?? new HtmlNodeCollection(null);
+        // New site (2026-11): <img class="reader-page" src="https://cdn.mangaworld.me/chapters/...">; old site: any <img>
+        HtmlNodeCollection imageNodes = doc.DocumentNode.SelectNodes("//img[contains(@class,'reader-page')]")
+                                        ?? doc.DocumentNode.SelectNodes("//img[@data-src or @src or @srcset]")
+                                        ?? new HtmlNodeCollection(null);
         IEnumerable<string> fromDom = imageNodes
             .SelectMany(i =>
             {
@@ -264,6 +270,23 @@ public sealed class Mangaworld : MangaConnector
         List<(Chapter, MangaConnectorId<Chapter>)> ret = new();
         HashSet<string> seen = new(StringComparer.OrdinalIgnoreCase);
 
+        // New site (2026-11): <div class="volume"><span class="volume-name">Volume N</span><ul class="ch-list">
+        // <li class="ch-row"><a class="ch" href=".../read/ID"><span class="ch-name">Capitolo N</span>...
+        // Chapters without volume are in <ul class="ch-list single-chapters"> (no surrounding div.volume).
+        if (document.DocumentNode.SelectNodes("//li[contains(@class,'ch-row')]/a[@href]") is { Count: > 0 } rows)
+        {
+            foreach (HtmlNode a in rows)
+            {
+                HtmlNode? volume = a.SelectSingleNode("ancestor::div[contains(concat(' ',normalize-space(@class),' '),' volume ')][1]");
+                string volText = volume?.SelectSingleNode(".//span[contains(@class,'volume-name')]")?.InnerText ?? "";
+                Match vm = Regex.Match(volText, @"[Vv]olume\s+([0-9]+)");
+                int volumeNumber = vm.Success && int.TryParse(vm.Groups[1].Value, NumberStyles.None, CultureInfo.InvariantCulture, out int v) ? v : 0;
+                TryAddChapterNode(manga, a, baseUri, volumeNumber, ret, seen);
+            }
+            if (ret.Count != 0)
+                return ret;
+        }
+
         HtmlNodeCollection? volumeElements = document.DocumentNode.SelectNodes("//div[contains(@class,'volume-element')]");
         if (volumeElements is { Count: > 0 })
         {
@@ -295,7 +318,8 @@ public sealed class Mangaworld : MangaConnector
     private void TryAddChapterNode(Manga manga, HtmlNode anchor, Uri baseUri, int volumeNumber,
         List<(Chapter, MangaConnectorId<Chapter>)> acc, HashSet<string> dedup)
     {
-        string label = anchor.SelectSingleNode(".//span")?.InnerText ?? anchor.InnerText ?? "";
+        string label = anchor.SelectSingleNode(".//span[contains(@class,'ch-name')]")?.InnerText
+                       ?? anchor.SelectSingleNode(".//span")?.InnerText ?? anchor.InnerText ?? "";
         Match cm = Regex.Match(label, @"(?:[Cc]apitolo|[Cc]hapter)\s*([0-9]+(?:\.[0-9]+)?)");
         if (!cm.Success) return;
 
@@ -379,13 +403,15 @@ public sealed class Mangaworld : MangaConnector
 
     private static string? ExtractItalianStatus(HtmlDocument doc)
     {
-        HtmlNode? node = doc.DocumentNode.SelectSingleNode("//span[normalize-space(text())='Stato:']/following-sibling::*[1]");
+        HtmlNode? node = doc.DocumentNode.SelectSingleNode("//dt[normalize-space(text())='Stato:']/following-sibling::dd[1]")
+                         ?? doc.DocumentNode.SelectSingleNode("//span[normalize-space(text())='Stato:']/following-sibling::*[1]");
         return node?.InnerText?.Trim();
     }
 
+    // New site: <dl class="fact-list manga-facts"><div><dt>Autore:</dt><dd><a>..</a></dd></div>; old site: div.meta-data span + a
     private static List<string> GetInfoAnchorTexts(HtmlDocument doc, string label) =>
-        doc.DocumentNode
-           .SelectNodes($"//div[contains(@class,'meta-data')]//span[normalize-space(text())='{label}']/following-sibling::a")
+        (doc.DocumentNode.SelectNodes($"//dl[contains(@class,'manga-facts')]//dt[normalize-space(text())='{label}']/following-sibling::dd[1]//a")
+         ?? doc.DocumentNode.SelectNodes($"//div[contains(@class,'meta-data')]//span[normalize-space(text())='{label}']/following-sibling::a"))
            ?.Select(a => HtmlEntity.DeEntitize(a.InnerText).Trim())
            .Where(s => !string.IsNullOrWhiteSpace(s))
            .ToList()
@@ -402,7 +428,7 @@ public sealed class Mangaworld : MangaConnector
     {
         List<Link> links = [];
         HashSet<string> providers = new(StringComparer.OrdinalIgnoreCase);
-        foreach (HtmlNode a in doc.DocumentNode.SelectNodes("//div[contains(@class,'references')]//a[@href]") ?? new HtmlNodeCollection(null))
+        foreach (HtmlNode a in doc.DocumentNode.SelectNodes("//ul[contains(@class,'manga-refs')]//a[@href] | //div[contains(@class,'references')]//a[@href]") ?? new HtmlNodeCollection(null))
         {
             string href = HtmlEntity.DeEntitize(a.GetAttributeValue("href", "")).Trim();
             if (!Uri.TryCreate(href, UriKind.Absolute, out Uri? uri) || href.Length > 2048)
@@ -417,8 +443,10 @@ public sealed class Mangaworld : MangaConnector
 
     private static List<AltTitle> ExtractAltTitles(HtmlDocument doc)
     {
-        HtmlNode? label = doc.DocumentNode.SelectSingleNode("//div[contains(@class,'meta-data')]//span[normalize-space(text())='Titoli alternativi:']");
-        if (label?.ParentNode is not { } container)
+        // New site: <p class="manga-alt"><strong>Titoli alternativi:</strong> a, b</p>; old site: div.meta-data span
+        HtmlNode? container = doc.DocumentNode.SelectSingleNode("//p[contains(@class,'manga-alt')]")
+                              ?? doc.DocumentNode.SelectSingleNode("//div[contains(@class,'meta-data')]//span[normalize-space(text())='Titoli alternativi:']")?.ParentNode;
+        if (container is null)
             return [];
 
         string raw = HtmlEntity.DeEntitize(container.InnerText);
